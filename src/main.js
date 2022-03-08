@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 // 加载全局样式
 import '@/styles/index.less'
+// 引入vantui
+import '@/vant'
 
 Vue.config.productionTip = false
 
