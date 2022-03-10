@@ -1,21 +1,15 @@
 <template>
   <div class="my-container">
-    <div class="header not-login">
-      <div class="login-btn" @click="$router.push('/login')">
-        <img class="mobile-img" src="~@/assets/mobile.png">
-        <span class="text">登录 / 注册</span>
-      </div>
-    </div>
-    <div class="header user-info">
+    <div v-if="user" class="header user-info">
       <div class="base-info">
         <div class="left">
           <van-image
             round
             fit="cover"
             class="avatar"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
+            :src="userInfo.photo"
           />
-          <span class="name">黑马头条号</span>
+          <span class="name">{{ userInfo.name }}</span>
         </div>
         <div class="right">
           <van-button round size="mini">编辑资料</van-button>
@@ -23,21 +17,27 @@
       </div>
       <div class="data-stats">
         <div class="data-item">
-          <sapn class="count">10</sapn>
-          <sapn class="text">头条</sapn>
+          <span class="count">{{ userInfo.art_count }}</span>
+          <span class="text">头条</span>
         </div>
         <div class="data-item">
-          <sapn class="count">666</sapn>
-          <sapn class="text">关注</sapn>
+          <span class="count">{{ userInfo.follow_count }}</span>
+          <span class="text">关注</span>
         </div>
         <div class="data-item">
-          <sapn class="count">666</sapn>
-          <sapn class="text">粉丝</sapn>
+          <span class="count">{{ userInfo.fans_count }}</span>
+          <span class="text">粉丝</span>
         </div>
         <div class="data-item">
-          <sapn class="count">666</sapn>
-          <sapn class="text">获赞</sapn>
+          <span class="count">{{ userInfo.like_count }}</span>
+          <span class="text">获赞</span>
         </div>
+      </div>
+    </div>
+    <div v-else class="header not-login">
+      <div class="login-btn" @click="$router.push('/login')">
+        <img class="mobile-img" src="~@/assets/mobile.png">
+        <span class="text">登录 / 注册</span>
       </div>
     </div>
     <!-- 导航 -->
@@ -52,12 +52,60 @@
       </van-grid-item>
     </van-grid>
     <!-- /导航 -->
+    <!-- 消息通知，小智同学，退出登录 -->
+    <van-cell title="消息通知" is-link/>
+    <van-cell title="小智同学" is-link/>
+    <van-cell
+      v-if="user"
+      title="退出登录"
+      center
+      clickable
+      class="logout-cell"
+      @click="onLogout"
+    />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { getUserInfo } from '@/api/user'
+
 export default {
-  name: 'MyIndex'
+  name: 'MyIndex',
+  data () {
+    return {
+      userInfo: {}
+    }
+  },
+  computed: {
+    ...mapState(['user'])
+  },
+  methods: {
+    onLogout () {
+      this.$dialog.confirm({
+        title: '确认退出吗？'
+      }).then(() => {
+        // on confirm
+        this.$store.commit('setUser', null)
+      }).catch(() => {
+        // on cancel
+      })
+    },
+    async loadUserInfo () {
+      try {
+        const { data } = await getUserInfo()
+        this.userInfo = data.data
+        console.log(data)
+      } catch (error) {
+        this.$toast('获取数据失败，请稍后重试')
+      }
+    }
+  },
+  async created () {
+    if (this.user) {
+      await this.loadUserInfo()
+    }
+  }
 }
 </script>
 
@@ -131,6 +179,7 @@ export default {
     }
   }
   .grid-nav {
+    margin-bottom: 9px;
     .grid-item {
       height: 141px;
       i.iconfont {
@@ -146,6 +195,11 @@ export default {
         font-size: 28px;
       }
     }
+  }
+  .logout-cell {
+    text-align: center;
+    color: #d86262;
+    margin-top: 9px;
   }
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <div class="layout-container">
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
     <van-tabbar route class="layout-tabbar">
       <van-tabbar-item replace to="/">
         <i slot="icon" class="iconfont icon-shouye"></i>
@@ -16,7 +18,7 @@
       </van-tabbar-item>
       <van-tabbar-item replace to="/my">
         <i slot="icon" class="iconfont icon-wode"></i>
-        <span class="text">我的</span>
+        <span class="text">{{ $store.state.user ? '我的' : '未登录' }}</span>
       </van-tabbar-item>
     </van-tabbar>
   </div>

@@ -8,7 +8,8 @@ import '@/vant'
 import '@/styles/index.less'
 // 动态设置rem基准值
 import 'amfe-flexible'
-
+import '@/utils/dayjs'
+Vue.prototype.$bus = new Vue()
 Vue.config.productionTip = false
 
 new Vue({
